@@ -33,8 +33,12 @@ repositories {
 group = "com.nametagedit"
 version = "4.5.23"
 description = "NametagEdit"
-java.sourceCompatibility = JavaVersion.VERSION_17
 def spigotVersion = "1.20.4-R0.1-SNAPSHOT"
+
+java.sourceCompatibility = JavaVersion.VERSION_1_8
+java.targetCompatibility = JavaVersion.VERSION_1_8
+compileJava.options.compilerArgs << "-parameters"
+
 
 configurations {
     shade.extendsFrom(implementation)
@@ -46,20 +50,23 @@ sourceSets.configureEach { ss ->
 
 dependencies {
     shade "com.zaxxer:HikariCP:5.1.0"
-    shade("com.googlecode.json-simple:json-simple:1.1.1") {
-        exclude group: "junit", module: "junit"
-    }
-    shade("junit:junit:4.13.1")
-    shade "com.google.guava:guava:32.0.0-jre"
     shade "co.aikar:acf-paper:0.5.1-SNAPSHOT"
+    shade "org.bstats:bstats-bukkit:3.0.2"
+    shade "org.slf4j:slf4j-jdk14:1.7.32"
 
-    compileOnly "org.bstats:bstats-bukkit:3.0.2"
     compileOnly "org.spigotmc:spigot-api:${spigotVersion}"
-    compileOnly "org.spigotmc:spigot:${spigotVersion}"
-    compileOnly "net.luckperms:api:5.4"
-    compileOnly "me.clip:placeholderapi:2.10.9"
+    compileOnly("org.spigotmc:spigot:${spigotVersion}") {
+        exclude group: "com.mojang" // To allow building against Java 8
+    }
+
+    compileOnly "com.google.guava:guava:32.0.0-jre"
+    compileOnly "commons-lang:commons-lang:2.6"
+    compileOnly("com.googlecode.json-simple:json-simple:1.1.1")
     compileOnly "org.projectlombok:lombok:1.18.34"
     annotationProcessor 'org.projectlombok:lombok:1.18.34'
+
+    compileOnly "net.luckperms:api:5.4"
+    compileOnly "me.clip:placeholderapi:2.10.9"
     compileOnly "me.glaremasters:guilds:3.5.6.6-SNAPSHOT"
     compileOnly files("lib/PermissionsEx.jar")
     compileOnly files("lib/zPermissions.jar")
@@ -75,6 +82,7 @@ tasks {
     shadowJar {
         archiveClassifier.set(null)
         configurations = [project.configurations.shade]
+        minimize()
     }
 
     build {
