@@ -76,11 +76,11 @@ dependencies {
 
 tasks {
     jar {
-        archiveClassifier.set("unshaded")
+        archiveFileName = "original-${project.description}.jar"
     }
 
     shadowJar {
-        archiveClassifier.set(null)
+        archiveFileName = "${project.description}.jar"
         configurations = [project.configurations.shade]
         minimize()
     }
